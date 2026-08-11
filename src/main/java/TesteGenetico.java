@@ -5,15 +5,17 @@ public class TesteGenetico {
 
     private int tamanhoPopulacao;
     private int geracoes;
+    private double taxaReproducao;
     private double taxaMutacao;
 
     private Dados dadosProblema;
     private double capacidade;
     private Genetico algoritmo;
 
-    public TesteGenetico(int tamanhoPopulacao, int geracoes, double taxaMutacao) {
+    public TesteGenetico(int tamanhoPopulacao, int geracoes, double taxaReproducao, double taxaMutacao) {
         this.tamanhoPopulacao = tamanhoPopulacao;
         this.geracoes = geracoes;
+        this.taxaReproducao = taxaReproducao;
         this.taxaMutacao = taxaMutacao;
 
         this.dadosProblema = new Dados();
@@ -47,7 +49,7 @@ public class TesteGenetico {
                 Individuo pai1 = algoritmo.selecionarPaiRoleta(populacao, somaFitness);
                 Individuo pai2 = algoritmo.selecionarPaiRoleta(populacao, somaFitness);
 
-                Individuo[] filhos = algoritmo.crossover(pai1, pai2);
+                Individuo[] filhos = algoritmo.cruzamento(pai1, pai2, taxaReproducao);
 
                 String dnaAntes1 = Arrays.toString(filhos[0].getCromossomo());
                 String dnaAntes2 = Arrays.toString(filhos[1].getCromossomo());

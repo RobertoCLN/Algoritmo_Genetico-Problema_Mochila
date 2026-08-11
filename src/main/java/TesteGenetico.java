@@ -30,6 +30,13 @@ public class TesteGenetico {
             algoritmo.calcularFitness(ind, capacidade);
         }
 
+        populacao.sort(null);
+
+        System.out.println("\n--- GERAÇÃO 0 (População Inicial) ---");
+        for (int i = 0; i < populacao.size(); i++) {
+            System.out.println((i + 1) + " -> " + populacao.get(i).toString());
+        }
+
         for (int g = 1; g <= geracoes; g++) {
             System.out.println("\n--- GERAÇÃO " + g + " ---");
 
@@ -42,8 +49,18 @@ public class TesteGenetico {
 
                 Individuo[] filhos = algoritmo.crossover(pai1, pai2);
 
-                algoritmo.mutar(filhos[0], taxaMutacao);
-                algoritmo.mutar(filhos[1], taxaMutacao);
+                String dnaAntes1 = Arrays.toString(filhos[0].getCromossomo());
+                String dnaAntes2 = Arrays.toString(filhos[1].getCromossomo());
+
+                boolean mutouFilho1 = algoritmo.mutar(filhos[0], taxaMutacao);
+                boolean mutouFilho2 = algoritmo.mutar(filhos[1], taxaMutacao);
+
+                if (mutouFilho1) {
+                    System.out.println("Mutação: " + dnaAntes1 + " -> " + Arrays.toString(filhos[0].getCromossomo()));
+                }
+                if (mutouFilho2) {
+                    System.out.println("Mutação: " + dnaAntes2 + " -> " + Arrays.toString(filhos[1].getCromossomo()));
+                }
 
                 algoritmo.calcularFitness(filhos[0], capacidade);
                 algoritmo.calcularFitness(filhos[1], capacidade);
@@ -57,14 +74,20 @@ public class TesteGenetico {
 
             populacao = algoritmo.ajustePopulacional(combinados, tamanhoPopulacao);
 
-            System.out.println("Melhor da Geração " + g + ": " + populacao.get(0).toString());
+            for (int i = 0; i < populacao.size(); i++) {
+                System.out.println((i + 1) + " -> " + populacao.get(i).toString());
+            }
         }
 
         System.out.println("\n>>>> SOLUÇÃO ENCONTRADA <<<<");
         Individuo melhorSolucao = populacao.get(0);
 
+        double somaFitnessFinal = algoritmo.calcularSomaFitness(populacao);
+        double probabilidade = melhorSolucao.getFitness() / somaFitnessFinal;
+
         System.out.println("INDIVÍDUO SOLUÇÃO: " + Arrays.toString(melhorSolucao.getCromossomo()) +
-                " / Fit:" + melhorSolucao.getFitness());
+                " / Fit:" + melhorSolucao.getFitness() +
+                " / Prob:" + probabilidade);
         System.out.println("Lucro Total = R$" + melhorSolucao.getFitness());
         System.out.println("Peso Total = " + melhorSolucao.getPesoTotal() + "Kg");
     }

@@ -38,9 +38,15 @@ public class Genetico {
 
         individuo.setPesoTotal(pesoTotal);
 
-        if (pesoTotal > capacidadeMax) {
+        /*if (pesoTotal > capacidadeMax) {
             double fatorPenalidade = capacidadeMax / pesoTotal;
             individuo.setFitness(valorTotal * fatorPenalidade * fatorPenalidade);
+        } else {
+            individuo.setFitness(valorTotal);
+        }*/
+
+        if (pesoTotal > capacidadeMax) {
+            individuo.setFitness(0);
         } else {
             individuo.setFitness(valorTotal);
         }
@@ -87,11 +93,13 @@ public class Genetico {
         return new Individuo[]{filho1, filho2};
     }
 
-    public void mutar(Individuo individuo, double taxaMutacao) {
+    public boolean mutar(Individuo individuo, double taxaMutacao) {
         if (random.nextDouble() <= taxaMutacao) {
             int posicao = random.nextInt(tamanhoCromossomo);
             individuo.inverterGene(posicao);
+            return true;
         }
+        return false;
     }
 
     public ArrayList<Individuo> ajustePopulacional(ArrayList<Individuo> combinados, int limitePopulacao) {

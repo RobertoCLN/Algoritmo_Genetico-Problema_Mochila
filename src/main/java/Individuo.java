@@ -13,7 +13,7 @@ public class Individuo implements Comparable<Individuo> {
     }
 
     public int[] getCromossomo() {
-        return cromossomo.clone();
+        return cromossomo;
     }
 
     public int getGene(int posicao) {
@@ -51,8 +51,8 @@ public class Individuo implements Comparable<Individuo> {
 
     @Override
     public String toString() {
-        return "Cromossomo: " + Arrays.toString(cromossomo) +
-                " | Fit: " + String.format("%.2f", fitness) + // Formatado para não estourar casas decimais
+        return " " + Arrays.toString(cromossomo) +
+                " | Fit: " + String.format("%.0f", fitness) +
                 " | Peso: " + pesoTotal;
     }
 }

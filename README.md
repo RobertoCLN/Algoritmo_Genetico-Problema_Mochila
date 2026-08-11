@@ -15,6 +15,7 @@ As principais características biológicas implementadas incluem:
 
 ## 📂 Estrutura do Projeto
 
+*   `Main.java`: Ponto de entrada limpo da aplicação, responsável por configurar e iniciar a simulação.
 *   `Objeto.java`: Entidade que representa os itens disponíveis, encapsulando ID, valor e peso.
 *   `Individuo.java`: Modela uma possível solução (a mochila). Contém o cromossomo (vetor binário) e implementa a lógica de ordenação descendente por *fitness*.
 *   `Dados.java`: Classe responsável por inicializar a base de conhecimento, definindo a capacidade máxima e catalogando os objetos do problema.
@@ -35,5 +36,5 @@ Certifique-se de ter o [Java JDK](https://www.oracle.com/java/technologies/downl
    ```
 3. Execute a classe principal:
    ```bash
-   java TesteGenetico
+   java Main
    ```

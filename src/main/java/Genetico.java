@@ -15,15 +15,12 @@ public class Genetico {
 
     public ArrayList<Individuo> inicializarPopulacao(int tamanhoPopulacao) {
         ArrayList<Individuo> populacao = new ArrayList<>();
-
         for (int i = 0; i < tamanhoPopulacao; i++) {
-            Individuo individuo = new Individuo(tamanhoCromossomo);
-            int[] cromossomo = individuo.getCromossomo();
-
+            Individuo ind = new Individuo(tamanhoCromossomo);
             for (int j = 0; j < tamanhoCromossomo; j++) {
-                cromossomo[j] = random.nextInt(2);
+                ind.setGene(j, random.nextInt(2));
             }
-            populacao.add(individuo);
+            populacao.add(ind);
         }
         return populacao;
     }
@@ -31,17 +28,15 @@ public class Genetico {
     public void calcularFitness(Individuo individuo, double capacidadeMax) {
         double pesoTotal = 0;
         double valorTotal = 0;
-        int[] cromossomo = individuo.getCromossomo();
 
         for (int i = 0; i < tamanhoCromossomo; i++) {
-            if (cromossomo[i] == 1) {
+            if (individuo.getGene(i) == 1) {
                 pesoTotal += dados.lista_objetos.get(i).getPeso();
                 valorTotal += dados.lista_objetos.get(i).getValor();
             }
         }
 
         individuo.setPesoTotal(pesoTotal);
-
 
         if (pesoTotal > capacidadeMax) {
             double fatorPenalidade = capacidadeMax / pesoTotal;
@@ -53,28 +48,24 @@ public class Genetico {
 
     public double calcularSomaFitness(ArrayList<Individuo> populacao) {
         double soma = 0;
-        for (Individuo individuo : populacao) {
-            soma += individuo.getFitness();
+        for (Individuo ind : populacao) {
+            soma += ind.getFitness();
         }
         return soma;
     }
 
     public Individuo selecionarPaiRoleta(ArrayList<Individuo> populacao, double somaFitness) {
-
         if (somaFitness <= 0) {
             return populacao.get(random.nextInt(populacao.size()));
         }
-
         double valorSorteado = random.nextDouble() * somaFitness;
         double acumulado = 0;
-
         for (Individuo ind : populacao) {
             acumulado += ind.getFitness();
             if (acumulado >= valorSorteado) {
                 return ind;
             }
         }
-
         return populacao.get(populacao.size() - 1);
     }
 
@@ -82,48 +73,33 @@ public class Genetico {
         Individuo filho1 = new Individuo(tamanhoCromossomo);
         Individuo filho2 = new Individuo(tamanhoCromossomo);
 
-        int[] cromossomoPai1 = pai1.getCromossomo();
-        int[] cromossomoPai2 = pai2.getCromossomo();
-        int[] cromossomoFilho1 = filho1.getCromossomo();
-        int[] cromossomoFilho2 = filho2.getCromossomo();
-
         int pontoCorte = random.nextInt(tamanhoCromossomo - 1) + 1;
 
         for (int i = 0; i < tamanhoCromossomo; i++) {
             if (i < pontoCorte) {
-                cromossomoFilho1[i] = cromossomoPai1[i];
-                cromossomoFilho2[i] = cromossomoPai2[i];
+                filho1.setGene(i, pai1.getGene(i));
+                filho2.setGene(i, pai2.getGene(i));
             } else {
-                cromossomoFilho1[i] = cromossomoPai2[i];
-                cromossomoFilho2[i] = cromossomoPai1[i];
+                filho1.setGene(i, pai2.getGene(i));
+                filho2.setGene(i, pai1.getGene(i));
             }
         }
-
         return new Individuo[]{filho1, filho2};
     }
 
-
     public void mutar(Individuo individuo, double taxaMutacao) {
         if (random.nextDouble() <= taxaMutacao) {
-            int[] cromossomo = individuo.getCromossomo();
-
             int posicao = random.nextInt(tamanhoCromossomo);
-
-            cromossomo[posicao] = 1 - cromossomo[posicao];
-
+            individuo.inverterGene(posicao);
         }
     }
 
     public ArrayList<Individuo> ajustePopulacional(ArrayList<Individuo> combinados, int limitePopulacao) {
-
         combinados.sort(null);
-
         ArrayList<Individuo> novaPopulacao = new ArrayList<>();
-
         for (int i = 0; i < limitePopulacao && i < combinados.size(); i++) {
             novaPopulacao.add(combinados.get(i));
         }
-
         return novaPopulacao;
     }
 }

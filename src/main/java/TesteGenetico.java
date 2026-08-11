@@ -1,20 +1,28 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class TesteGenetico {
 
-    public static void main(String[] args) {
+    private int tamanhoPopulacao;
+    private int geracoes;
+    private double taxaMutacao;
 
-        Dados dadosProblema = new Dados();
-        double capacidade = dadosProblema.getCapacidadeMochila(); // 3000
-        int tamanhoPopulacao = 10;
-        int geracoes = 3;
-        double taxaMutacao = 0.05; // 5%
+    private Dados dadosProblema;
+    private double capacidade;
+    private Genetico algoritmo;
 
+    public TesteGenetico(int tamanhoPopulacao, int geracoes, double taxaMutacao) {
+        this.tamanhoPopulacao = tamanhoPopulacao;
+        this.geracoes = geracoes;
+        this.taxaMutacao = taxaMutacao;
 
-        System.out.println("=== INICIANDO ALGORITMO GENÉTICO ===");
+        this.dadosProblema = new Dados();
+        this.capacidade = dadosProblema.getCapacidadeMochila();
+        this.algoritmo = new Genetico(dadosProblema);
+    }
+
+    public void iniciarEvolucao() {
         System.out.println("Capacidade: " + capacidade + "Kg | População: " + tamanhoPopulacao + " | Gerações: " + geracoes);
-
-        Genetico algoritmo = new Genetico(dadosProblema);
 
         ArrayList<Individuo> populacao = algoritmo.inicializarPopulacao(tamanhoPopulacao);
 
@@ -55,10 +63,9 @@ public class TesteGenetico {
         System.out.println("\n>>>> SOLUÇÃO ENCONTRADA <<<<");
         Individuo melhorSolucao = populacao.get(0);
 
-        System.out.println("INDIVÍDUO SOLUÇÃO: " + java.util.Arrays.toString(melhorSolucao.getCromossomo()) +
+        System.out.println("INDIVÍDUO SOLUÇÃO: " + Arrays.toString(melhorSolucao.getCromossomo()) +
                 " / Fit:" + melhorSolucao.getFitness());
         System.out.println("Lucro Total = R$" + melhorSolucao.getFitness());
         System.out.println("Peso Total = " + melhorSolucao.getPesoTotal() + "Kg");
-
     }
 }

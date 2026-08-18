@@ -7,29 +7,27 @@ public class TesteGenetico {
     private int geracoes;
     private double taxaReproducao;
     private double taxaMutacao;
-
     private Dados dadosProblema;
     private double capacidade;
-    private Genetico algoritmo;
+    private Genetico genetico;
 
     public TesteGenetico(int tamanhoPopulacao, int geracoes, double taxaReproducao, double taxaMutacao) {
         this.tamanhoPopulacao = tamanhoPopulacao;
         this.geracoes = geracoes;
         this.taxaReproducao = taxaReproducao;
         this.taxaMutacao = taxaMutacao;
-
         this.dadosProblema = new Dados();
         this.capacidade = dadosProblema.getCapacidadeMochila();
-        this.algoritmo = new Genetico(dadosProblema);
+        this.genetico = new Genetico(dadosProblema);
     }
 
     public void iniciarEvolucao() {
         System.out.println("Capacidade: " + capacidade + "Kg | População: " + tamanhoPopulacao + " | Gerações: " + geracoes);
 
-        ArrayList<Individuo> populacao = algoritmo.inicializarPopulacao(tamanhoPopulacao);
+        ArrayList<Individuo> populacao = genetico.inicializarPopulacao(tamanhoPopulacao);
 
         for (Individuo ind : populacao) {
-            algoritmo.calcularFitness(ind, capacidade);
+            genetico.calcularFitness(ind, capacidade);
         }
 
         populacao.sort(null);
@@ -42,20 +40,20 @@ public class TesteGenetico {
         for (int g = 1; g <= geracoes; g++) {
             System.out.println("\n--- GERAÇÃO " + g + " ---");
 
-            double somaFitness = algoritmo.calcularSomaFitness(populacao);
+            double somaFitness = genetico.calcularSomaFitness(populacao);
             ArrayList<Individuo> descendentes = new ArrayList<>();
 
             while (descendentes.size() < tamanhoPopulacao) {
-                Individuo pai1 = algoritmo.selecionarPaiRoleta(populacao, somaFitness);
-                Individuo pai2 = algoritmo.selecionarPaiRoleta(populacao, somaFitness);
+                Individuo pai1 = genetico.selecionarPaiRoleta(populacao, somaFitness);
+                Individuo pai2 = genetico.selecionarPaiRoleta(populacao, somaFitness);
 
-                Individuo[] filhos = algoritmo.cruzamento(pai1, pai2, taxaReproducao);
+                Individuo[] filhos = genetico.cruzamento(pai1, pai2, taxaReproducao);
 
                 String dnaAntes1 = Arrays.toString(filhos[0].getCromossomo());
                 String dnaAntes2 = Arrays.toString(filhos[1].getCromossomo());
 
-                boolean mutouFilho1 = algoritmo.mutar(filhos[0], taxaMutacao);
-                boolean mutouFilho2 = algoritmo.mutar(filhos[1], taxaMutacao);
+                boolean mutouFilho1 = genetico.mutar(filhos[0], taxaMutacao);
+                boolean mutouFilho2 = genetico.mutar(filhos[1], taxaMutacao);
 
                 if (mutouFilho1) {
                     System.out.println("Mutação: " + dnaAntes1 + " -> " + Arrays.toString(filhos[0].getCromossomo()));
@@ -64,8 +62,8 @@ public class TesteGenetico {
                     System.out.println("Mutação: " + dnaAntes2 + " -> " + Arrays.toString(filhos[1].getCromossomo()));
                 }
 
-                algoritmo.calcularFitness(filhos[0], capacidade);
-                algoritmo.calcularFitness(filhos[1], capacidade);
+                genetico.calcularFitness(filhos[0], capacidade);
+                genetico.calcularFitness(filhos[1], capacidade);
 
                 descendentes.add(filhos[0]);
                 descendentes.add(filhos[1]);
@@ -74,23 +72,37 @@ public class TesteGenetico {
             ArrayList<Individuo> combinados = new ArrayList<>(populacao);
             combinados.addAll(descendentes);
 
-            populacao = algoritmo.ajustePopulacional(combinados, tamanhoPopulacao);
+            populacao = genetico.ajustePopulacional(combinados, tamanhoPopulacao, capacidade);
 
             for (int i = 0; i < populacao.size(); i++) {
                 System.out.println((i + 1) + " -> " + populacao.get(i).toString());
             }
         }
 
-        System.out.println("\n>>>> SOLUÇÃO ENCONTRADA <<<<");
-        Individuo melhorSolucao = populacao.get(0);
+        Individuo melhorSolucao = null;
 
-        double somaFitnessFinal = algoritmo.calcularSomaFitness(populacao);
+        for (Individuo ind : populacao) {
+            if (ind.getPesoTotal() <= capacidade) {
+                melhorSolucao = ind;
+                break;
+            }
+        }
+
+        if (melhorSolucao == null || melhorSolucao.getFitness() <= 0) {
+            System.out.println("O algoritmo falhou em encontrar uma mochila válida nesta execução.");
+            return;
+        }
+
+        double somaFitnessFinal = genetico.calcularSomaFitness(populacao);
         double probabilidade = melhorSolucao.getFitness() / somaFitnessFinal;
 
-        System.out.println("INDIVÍDUO SOLUÇÃO: " + Arrays.toString(melhorSolucao.getCromossomo()) +
-                " / Fit:" + melhorSolucao.getFitness() +
-                " / Prob:" + probabilidade);
-        System.out.println("Lucro Total = R$" + melhorSolucao.getFitness());
-        System.out.println("Peso Total = " + melhorSolucao.getPesoTotal() + "Kg");
+
+
+            System.out.println("\n>>>> SOLUÇÃO ENCONTRADA <<<<");
+            System.out.println("INDIVÍDUO SOLUÇÃO: " + Arrays.toString(melhorSolucao.getCromossomo()) +
+                    " / Fit:" + melhorSolucao.getFitness() +
+                    " / Prob:" + probabilidade);
+            System.out.println("Lucro Total = R$" + melhorSolucao.getFitness());
+            System.out.println("Peso Total = " + melhorSolucao.getPesoTotal() + "Kg");
     }
 }

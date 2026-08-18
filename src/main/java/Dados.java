@@ -2,7 +2,7 @@ import java.util.ArrayList;
 
 public class Dados {
 
-    private double capacidadeMochila = 3000.0;
+    private double capacidadeMochila = 3000;
 
     Objeto obj1 = new Objeto(1, 400, 200);
     Objeto obj2 = new Objeto(2, 500, 200);

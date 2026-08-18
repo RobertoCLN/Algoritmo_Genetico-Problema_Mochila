@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Random;
 
 public class Genetico {
@@ -37,19 +38,8 @@ public class Genetico {
         }
 
         individuo.setPesoTotal(pesoTotal);
+        individuo.setFitness(valorTotal);
 
-        /*if (pesoTotal > capacidadeMax) {
-            double fatorPenalidade = capacidadeMax / pesoTotal;
-            individuo.setFitness(valorTotal * fatorPenalidade * fatorPenalidade);
-        } else {
-            individuo.setFitness(valorTotal);
-        }*/
-
-        if (pesoTotal > capacidadeMax) {
-            individuo.setFitness(0);
-        } else {
-            individuo.setFitness(valorTotal);
-        }
     }
 
     public double calcularSomaFitness(ArrayList<Individuo> populacao) {
@@ -110,12 +100,40 @@ public class Genetico {
         return false;
     }
 
-    public ArrayList<Individuo> ajustePopulacional(ArrayList<Individuo> combinados, int limitePopulacao) {
-        combinados.sort(null);
-        ArrayList<Individuo> novaPopulacao = new ArrayList<>();
-        for (int i = 0; i < limitePopulacao && i < combinados.size(); i++) {
-            novaPopulacao.add(combinados.get(i));
+    public ArrayList<Individuo> ajustePopulacional(ArrayList<Individuo> combinados, int limitePopulacao, double capacidadeMax) {
+
+        ArrayList<Individuo> validos = new ArrayList<>();
+        ArrayList<Individuo> invalidos = new ArrayList<>();
+
+        for (Individuo ind : combinados) {
+            if (ind.getPesoTotal() <= capacidadeMax) {
+                validos.add(ind);
+            } else {
+                invalidos.add(ind);
+            }
         }
+
+        validos.sort(null);
+        invalidos.sort(Comparator.comparingDouble(Individuo::getPesoTotal));
+
+        ArrayList<Individuo> novaPopulacao = new ArrayList<>();
+
+        for (int i = 0; i < validos.size(); i++) {
+            if (novaPopulacao.size() < limitePopulacao) {
+                novaPopulacao.add(validos.get(i));
+            } else {
+                break;
+            }
+        }
+
+        for (int i = 0; i < invalidos.size(); i++) {
+            if (novaPopulacao.size() < limitePopulacao) {
+                novaPopulacao.add(invalidos.get(i));
+            } else {
+                break;
+            }
+        }
+        novaPopulacao.sort(null);
         return novaPopulacao;
     }
 }
